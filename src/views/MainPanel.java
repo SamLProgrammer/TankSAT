@@ -130,7 +130,7 @@ public class MainPanel extends JPanel {
         me.setFocusPanel(this);
         addMouseMotionListener(me);
         addKeyListener(space.getMainAgent().getMotionEngine());
-        setFocusable(true);
+        setFocusable(true); // ok
     }
 
     public void updateFrame(Space space) {
