@@ -9,6 +9,8 @@ import models.Space;
 import models.Square;
 import models.Transform;
 import models.Triangle;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -50,7 +52,8 @@ public class MainPanel extends JPanel {
     }
 
     private void paintTank(Graphics2D g2) {
-        g2.setColor(space.getTank().isColliding() ? Color.red: Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.setColor(space.getTank().isColliding() ? Color.red: new Color(80, 135, 8));
         for (Shape shape : space.getTank().getShapes()) {
             if (shape instanceof Triangle) {
                 paintTriangle(g2, (Triangle) shape);
@@ -58,6 +61,7 @@ public class MainPanel extends JPanel {
                 paintSquare(g2, (Square) shape);
             }
         }
+        g2.setStroke(new BasicStroke(1));
     }
 
     private void paintSquare(Graphics2D g2, Square shape) {

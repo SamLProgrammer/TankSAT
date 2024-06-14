@@ -56,11 +56,9 @@ public class Square extends Shape {
     protected void rotate(double i, Vector2D rotationPoint2) {
         Vector2D relativeTo = new Vector2D(rotationPoint2.getX(), rotationPoint2.getY());
         for (Vector2D vertex : vertexes) {
-            // vertex.substractFromVector(relativeTo);
             Vector2D rotatedVector = MatrixTransform.rotate(relativeTo, vertex, i);
             vertex.setX(rotatedVector.getX());
             vertex.setY(rotatedVector.getY());
-            // vertex.addToVector(relativeTo);
         }
     }
 

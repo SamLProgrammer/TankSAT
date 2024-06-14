@@ -17,20 +17,35 @@ public class Space {
 
     private void initComponents() {
         penObstacles = new ArrayList<>();
-        Vector2D[] penObstacleVertex = new Vector2D[8];
-        penObstacleVertex[0] = new Vector2D(-2, 1).scale(1 / 7.0);
-        penObstacleVertex[1] = new Vector2D(-1, 2).scale(1 / 7.0);
-        penObstacleVertex[2] = new Vector2D(1, 2).scale(1 / 7.0);
-        penObstacleVertex[3] = new Vector2D(2, 1).scale(1 / 7.0);
-        penObstacleVertex[4] = new Vector2D(2, -1).scale(1 / 7.0);
-        penObstacleVertex[5] = new Vector2D(1, -2).scale(1 / 7.0);
-        penObstacleVertex[6] = new Vector2D(-1, -2).scale(1 / 7.0);
-        penObstacleVertex[7] = new Vector2D(-2, -1).scale(1 / 7.0);
-        for (Vector2D vector2d : penObstacleVertex) {
-            // vector2d.addToVector(new Vector2D(-7, 3.5));
-            vector2d.addToVector(new Vector2D(-2, 1));
+        Vector2D[] penObstacleVertexesBase = new Vector2D[8];
+        penObstacleVertexesBase[0] = new Vector2D(-2, 1).scale(1 / 7.0);
+        penObstacleVertexesBase[1] = new Vector2D(-1, 2).scale(1 / 7.0);
+        penObstacleVertexesBase[2] = new Vector2D(1, 2).scale(1 / 7.0);
+        penObstacleVertexesBase[3] = new Vector2D(2, 1).scale(1 / 7.0);
+        penObstacleVertexesBase[4] = new Vector2D(2, -1).scale(1 / 7.0);
+        penObstacleVertexesBase[5] = new Vector2D(1, -2).scale(1 / 7.0);
+        penObstacleVertexesBase[6] = new Vector2D(-1, -2).scale(1 / 7.0);
+        penObstacleVertexesBase[7] = new Vector2D(-2, -1).scale(1 / 7.0);
+
+        double xOffset = 0;
+        double yOffset = 0;
+
+        Vector2D initialPoint = new Vector2D(-7, -3.5);
+
+        for(int y = 0; y < 5; y++) {
+            xOffset = 0;
+            for(int x = 0; x < 5; x++) {
+                Vector2D[] penObstacleVertexes = new Vector2D[penObstacleVertexesBase.length];
+                Vector2D positionPoint = Vector2D.addVectors(new Vector2D(xOffset, yOffset), initialPoint);
+                for (int j = 0; j < penObstacleVertexes.length; j++) {
+                    penObstacleVertexes[j] = Vector2D.addVectors(positionPoint, penObstacleVertexesBase[j]);
+                }
+                penObstacles.add(new PenObstacle(positionPoint, penObstacleVertexes));
+                xOffset += HORIZONTAL / 5;
+            }
+            yOffset += VERTICAL / 5;
         }
-        penObstacles.add(new PenObstacle((new Vector2D(0, 0)).addToVector(new Vector2D(-7, 3.7)), penObstacleVertex));
+        // penObstacles.add(new PenObstacle(new Vector2D(-7, 3.7), penObstacleVertexesBase));
 
         double squareUnit = 0.3 / 7;
         Square tankBody = new Square(-0.15, 0.15, 0.3, 0.4);
@@ -42,6 +57,10 @@ public class Space {
                 0.15 + 2 * squareUnit + (4 * squareUnit / 5), +(4 * squareUnit / 5), +(4 * squareUnit / 5));
         Square rightGunHole = new Square(-0.15 + 4 * squareUnit + squareUnit / 7,
                 0.15 + 2 * squareUnit + (4 * squareUnit / 5), +(4 * squareUnit / 5), +(4 * squareUnit / 5));
+        // Triangle leftGunHole = new Triangle(new Vector2D(-0.15 + 2 * squareUnit, 0.15 + 2 * squareUnit),
+        // new Vector2D(-0.15 + 3 * squareUnit, 0.15 + 2 * squareUnit), new Vector2D(-0.15 + 2.5 * squareUnit, 0.15 + 2 * squareUnit + squareUnit));
+        // Triangle rightGunHole = new Triangle(new Vector2D(-0.15 + 4 * squareUnit, 0.15 + 2 * squareUnit),
+        // new Vector2D(-0.15 + 5 * squareUnit, 0.15 + 2 * squareUnit), new Vector2D(-0.15 + 4.5 * squareUnit, 0.15 + 2 * squareUnit + squareUnit));
         Square wheel1 = new Square(0.15, 0.15 - squareUnit, squareUnit, squareUnit);
         Square wheel2 = new Square(0.15, 0.15 - squareUnit * 3, squareUnit, squareUnit);
         Square wheel3 = new Square(0.15, 0.15 - squareUnit * 5, squareUnit, squareUnit);

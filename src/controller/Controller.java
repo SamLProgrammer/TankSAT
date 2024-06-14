@@ -1,8 +1,6 @@
 package controller;
 
 import javax.swing.SwingUtilities;
-
-import models.AimingEngine;
 import models.Space;
 import models.TimeStamp;
 import views.MainFrame;
@@ -26,7 +24,7 @@ public class Controller {
                     mainFrame.updateFrame(space);
                 });
                 try {
-                    Thread.sleep(60);
+                    Thread.sleep(17);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

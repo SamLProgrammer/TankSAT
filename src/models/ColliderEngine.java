@@ -19,9 +19,8 @@ public class ColliderEngine {
     }
 
     public boolean checkComponentCollisions(Component component) {
-        boolean colliding = true;
-        for (PenObstacle penObstacle : penObstacles) {
-
+        for (PenObstacle penObstacle : penObstacles) { // HERE
+            boolean colliding = true; // HERE
             for (Line line : component.getLines()) {
                 Vector2D lineAxisVector = Vector2D.lineNormalVector(line);
                 double triangleMinProjection = Double.MAX_VALUE;
@@ -75,8 +74,11 @@ public class ColliderEngine {
                             || triangle2MaxProjection <= triangleMinProjection);
                 }
             }
+            if(colliding) {
+                return true;
+            }
         }
-        return colliding;
+        return false;
     }
 
     public void setTank(Tank tank) {
