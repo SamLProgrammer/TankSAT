@@ -5,17 +5,28 @@ public class Tank {
     private Shape[] shapes;
     private Component body;
     private Component gun;
+    private Component gunBase;
+    private Component leftWeapon;
+    private Component rightWeapon;
     private Vector2D direction;
     private MotionEngine motionEngine;
+    private ColliderEngine colliderEngine;
+    private AimingEngine aimingEngine;
 
-    public Tank(Component body, Component gun) {
-        initComponents(body, gun);
+    public Tank(ColliderEngine colliderEngine, Component body, Component gun, Component gunBase, Component leftWeapon,
+            Component rightWeapon) {
+        initComponents(colliderEngine, body, gun, gunBase, leftWeapon, rightWeapon);
     }
 
-    private void initComponents(Component body, Component gun) {
+    private void initComponents(ColliderEngine colliderEngine, Component body, Component gun, Component gunBase,
+            Component leftWeapon, Component rightWeapon) {
         this.motionEngine = new MotionEngine(this);
+        this.colliderEngine = colliderEngine;
         this.body = body;
         this.gun = gun;
+        this.gunBase = gunBase;
+        this.leftWeapon = leftWeapon;
+        this.rightWeapon = rightWeapon;
         Shape[] shapes = new Shape[gun.getShapesAmount() + body.getShapesAmount()];
         this.shapes = new Shape[shapes.length];
 
@@ -30,8 +41,6 @@ public class Tank {
             index += 1;
         }
         this.direction = new Vector2D(0, 1);
-        aim(-90);
-        rotate(-90);
     }
 
     public Line[] getLines() {
@@ -72,7 +81,18 @@ public class Tank {
 
     public void aim(double i) {
         for (Shape shape : gun.getShapes()) {
-            shape.rotate(i, gun.getRotationPoint());
+            for (int j = 0; j < shape.getOriginalVertexes().length; j++) {
+                Vector2D rotatedVertex = MatrixTransform.rotate(new Vector2D(0, 0), shape.getOriginalVertexes()[j], i);
+                shape.getVertexes()[j].setX(rotatedVertex.getX() + gun.getRotationPoint().getX());
+                shape.getVertexes()[j].setY(rotatedVertex.getY() + gun.getRotationPoint().getY());
+            }
+        }
+        if (colliderEngine.getTank() != null) {
+            if (colliderEngine.checkTankGunCollisions()) {
+                aim(aimingEngine.getLastRotationGrades());
+            } else {
+                aimingEngine.setLastRotationGrades(i);
+            }
         }
     }
 
@@ -103,6 +123,17 @@ public class Tank {
         } else if (motionEngine.isMovingBackward()) {
             movingDirection = Vector2D.addVectors(movingDirection, direction).scale(-dt);
         }
+
+        extracted(movingDirection);
+        gun.getRotationPoint().addToVector(movingDirection);
+        if (colliderEngine.checkTankBodyCollisions() || colliderEngine.checkTankGunCollisions()) {
+            extracted(movingDirection.scale(-1.0));
+            gun.getRotationPoint().addToVector(movingDirection);
+        }
+        rotate(dt);
+    }
+
+    private void extracted(Vector2D movingDirection) {
         for (Shape shape : body.getShapes()) {
             for (Vector2D vertex : shape.getVertexes()) {
                 vertex.addToVector(movingDirection);
@@ -114,11 +145,10 @@ public class Tank {
                 vertex.addToVector(movingDirection);
             }
         }
-        gun.getRotationPoint().addToVector(movingDirection);
-        rotate(dt);
     }
 
     public void rotate(double dt) {
+        double originalDt = dt;
         dt *= 100;
         double grades = 0;
         if (motionEngine.isRotatingLeft()) {
@@ -126,12 +156,18 @@ public class Tank {
         } else if (motionEngine.isRotatingRight()) {
             grades -= 1;
         }
+        grades *= dt;
+
         for (Shape shape : body.getShapes()) {
-            shape.rotate(grades*dt, body.getRotationPoint());
+            shape.rotate(grades, body.getRotationPoint());
         }
-        Vector2D adjustedDirection = MatrixTransform.rotate(direction, grades*dt);
+        Vector2D adjustedDirection = MatrixTransform.rotate(new Vector2D(0, 0), direction, grades);
         direction.setX(adjustedDirection.getX());
         direction.setY(adjustedDirection.getY());
+
+        if (colliderEngine.getTank() != null && colliderEngine.checkTankBodyCollisions()) {
+            rotate(-originalDt);
+        }
     }
 
     public void setColliding(boolean colliding) {
@@ -143,5 +179,17 @@ public class Tank {
 
     public MotionEngine getMotionEngine() {
         return motionEngine;
+    }
+
+    public Component getLeftWeapon() {
+        return leftWeapon;
+    }
+
+    public Component getRightWeapon() {
+        return rightWeapon;
+    }
+
+    public void setAimingEngine(AimingEngine aimingEngine) {
+        this.aimingEngine = aimingEngine;
     }
 }

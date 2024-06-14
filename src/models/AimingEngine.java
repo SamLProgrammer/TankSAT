@@ -13,6 +13,7 @@ public class AimingEngine extends MouseAdapter {
 
     public AimingEngine(Tank tank) {
         this.tank = tank;
+        tank.setAimingEngine(this);
     }
 
     @Override
@@ -26,13 +27,18 @@ public class AimingEngine extends MouseAdapter {
         double cursorGrades = Math.toDegrees(Math.atan2(yComponent, xComponent));
         cursorGrades = (cursorGrades + 360) % 360;
 
-        double rotationGrades = cursorGrades - lastRotationGrades;
-        lastRotationGrades += rotationGrades;
-
-        tank.aim(rotationGrades);
+        tank.aim(cursorGrades-90);
     }
 
     public void setFocusPanel(MainPanel focusPanel) {
         this.focusPanel = focusPanel;
+    }
+
+    public double getLastRotationGrades() {
+        return lastRotationGrades;
+    }
+
+    public void setLastRotationGrades(double lastRotationGrades) {
+        this.lastRotationGrades = lastRotationGrades;
     }
 }

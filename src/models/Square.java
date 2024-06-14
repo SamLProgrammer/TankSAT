@@ -25,6 +25,15 @@ public class Square extends Shape {
         this.vertexes[1] = vertex2;
         this.vertexes[2] = vertex3;
         this.vertexes[3] = vertex4;
+        Vector2D[] originalVertexes = new Vector2D[this.vertexes.length];
+
+        int i = 0;
+        for (Vector2D vector2d : this.vertexes) {
+            originalVertexes[i] = new Vector2D(vector2d.getX(), vector2d.getY());
+            i += 1;
+        }
+
+        super.setOriginalVertexes(originalVertexes);
 
         this.lines = new Line[4];
         this.lines[0] = new Line(vertex1, vertex2);
@@ -47,11 +56,11 @@ public class Square extends Shape {
     protected void rotate(double i, Vector2D rotationPoint2) {
         Vector2D relativeTo = new Vector2D(rotationPoint2.getX(), rotationPoint2.getY());
         for (Vector2D vertex : vertexes) {
-            vertex.substractFromVector(relativeTo);
-            Vector2D rotatedVector = MatrixTransform.rotate(vertex, i);
+            // vertex.substractFromVector(relativeTo);
+            Vector2D rotatedVector = MatrixTransform.rotate(relativeTo, vertex, i);
             vertex.setX(rotatedVector.getX());
             vertex.setY(rotatedVector.getY());
-            vertex.addToVector(relativeTo);
+            // vertex.addToVector(relativeTo);
         }
     }
 

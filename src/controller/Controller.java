@@ -13,8 +13,7 @@ public class Controller {
 
     public Controller() {
         space = new Space();
-        AimingEngine me = new AimingEngine(space.getMainAgent());
-        mainFrame = new MainFrame(space, me);
+        mainFrame = new MainFrame(space, space.getAimingEngine());
         initThread();
     }
 

@@ -1,10 +1,9 @@
 package models;
 
-public class Triangle extends Shape{
+public class Triangle extends Shape {
 
     private Vector2D[] vertexes;
     private Line[] lines;
-    private boolean colliding;
 
     public Triangle(Vector2D vertex1, Vector2D vertex2, Vector2D vertex3) {
         initComponents(vertex1, vertex2, vertex3);
@@ -15,6 +14,16 @@ public class Triangle extends Shape{
         this.vertexes[0] = vertex1;
         this.vertexes[1] = vertex2;
         this.vertexes[2] = vertex3;
+
+        Vector2D[] originalVertexes = new Vector2D[this.vertexes.length];
+
+        int i = 0;
+        for (Vector2D vector2d : vertexes) {
+            originalVertexes[i] = new Vector2D(vector2d.getX(), vector2d.getY());
+            i += 1;
+        }
+
+        super.setOriginalVertexes(originalVertexes);
 
         this.lines = new Line[3];
         this.lines[0] = new Line(vertex1, vertex2);
@@ -35,23 +44,11 @@ public class Triangle extends Shape{
 
     @Override
     public void rotate(double i, Vector2D relativeToV) {
-
-        Vector2D relativeConstVector = new Vector2D(relativeToV.getX(), relativeToV.getY());
-
         for (Vector2D vertex : vertexes) {
-            vertex.substractFromVector(relativeConstVector);
-        }
-
-        for (Vector2D vertex : vertexes) {
-            Vector2D newVertex = MatrixTransform.rotate(vertex, 1);
+            Vector2D newVertex = MatrixTransform.rotate(relativeToV, vertex, 1);
             vertex.setX(newVertex.getX());
             vertex.setY(newVertex.getY());
         }
-
-        for (Vector2D vertex : vertexes) {
-            vertex.addToVector(relativeConstVector);
-        }
-
     }
 
     public Vector2D getRotationPoint() {
@@ -67,6 +64,5 @@ public class Triangle extends Shape{
     public boolean isColliding() {
         return super.isColliding();
     }
-    
 
 }

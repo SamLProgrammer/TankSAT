@@ -1,10 +1,8 @@
 package views;
 
 import javax.swing.JPanel;
-
-import models.Tank;
 import models.Line;
-import models.MotionEngine;
+import models.PenObstacle;
 import models.AimingEngine;
 import models.Shape;
 import models.Space;
@@ -15,7 +13,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.ArrayList;
 
 public class MainPanel extends JPanel {
 
@@ -33,36 +30,28 @@ public class MainPanel extends JPanel {
         if (space != null) {
             paintAxis(g2);
             paintTank(g2);
-            paintTankDirection(g2);
-            paintRotationPoint(g2);
+            paintObstacles(g2);
         }
     }
 
-    private void paintRotationPoint(Graphics2D g2) {
-        double x = Transform.xTransform(space.getMainAgent().getGun().getRotationPoint().getX(), getWidth());
-        double y = Transform.yTransform(space.getMainAgent().getGun().getRotationPoint().getY(), getHeight());
-        double x1 = Transform.xTransform(space.getMainAgent().getBody().getRotationPoint().getX(), getWidth());
-        double y1 = Transform.yTransform(space.getMainAgent().getBody().getRotationPoint().getY(), getHeight());
+    private void paintObstacles(Graphics2D g2) {
+        g2.setColor(Color.yellow);
+        for (PenObstacle penObstacle : space.getPenObstacles()) {
+            for(Line line: penObstacle.getLines()) {
+                double x1 = Transform.xTransform(line.getBeginVector().getX(), getWidth());
+                double y1 = Transform.yTransform(line.getBeginVector().getY(), getHeight());
+                double x2 = Transform.xTransform(line.getFinalVector().getX(), getWidth());
+                double y2 = Transform.yTransform(line.getFinalVector().getY(), getHeight());
 
-        g2.setColor(Color.pink);
-        g2.drawOval((int)x, (int)y, 5, 5);   
-        // g2.setColor(Color.yellow);
-        // g2.drawOval((int)x1, (int)y1, 5, 5);   
-    }
+                g2.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+            }
+        }
 
-    private void paintTankDirection(Graphics2D g2) {
-        g2.setColor(Color.RED);
-        double x1 = Transform.xTransform(0, getWidth());
-        double y1 = Transform.yTransform(0, getHeight());
-        double x2 = Transform.xTransform(space.getMainAgent().getDirection().getX(), getWidth());
-        double y2 = Transform.yTransform(space.getMainAgent().getDirection().getY(), getHeight());
-
-        g2.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
     }
 
     private void paintTank(Graphics2D g2) {
-        g2.setColor(Color.white);
-        for (Shape shape : space.getMainAgent().getShapes()) {
+        g2.setColor(space.getTank().isColliding() ? Color.red: Color.white);
+        for (Shape shape : space.getTank().getShapes()) {
             if (shape instanceof Triangle) {
                 paintTriangle(g2, (Triangle) shape);
             } else if (shape instanceof Square) {
@@ -72,7 +61,6 @@ public class MainPanel extends JPanel {
     }
 
     private void paintSquare(Graphics2D g2, Square shape) {
-        g2.setColor(shape.isColliding() ? Color.blue : g2.getColor());
         for (Line line : shape.getLines()) {
             double x1 = Transform.xTransform(line.getBeginVector().getX(), getWidth());
             double y1 = Transform.yTransform(line.getBeginVector().getY(), getHeight());
@@ -99,7 +87,6 @@ public class MainPanel extends JPanel {
     }
 
     private void paintTriangle(Graphics2D g2, Shape shape) {
-        g2.setColor(shape.isColliding() ? Color.blue : g2.getColor());
         double l1x1 = Transform.xTransform(shape.getLines()[0].getBeginVector().getX(), getWidth());
         double l1y1 = Transform.yTransform(shape.getLines()[0].getBeginVector().getY(), getHeight());
         double l1x2 = Transform.xTransform(shape.getLines()[0].getFinalVector().getX(), getWidth());
@@ -129,7 +116,7 @@ public class MainPanel extends JPanel {
         this.space = space;
         me.setFocusPanel(this);
         addMouseMotionListener(me);
-        addKeyListener(space.getMainAgent().getMotionEngine());
+        addKeyListener(space.getTank().getMotionEngine());
         setFocusable(true);
     }
 

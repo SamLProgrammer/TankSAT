@@ -2,6 +2,7 @@ package models;
 
 public abstract class Shape {
     
+    private Vector2D[] originalVertexes;
     private Vector2D[] vertexes;
     private Line[] lines;
     private boolean colliding;
@@ -31,5 +32,13 @@ public abstract class Shape {
 
     public Vector2D getCenterPoint() {
         return centerPoint;
+    }
+
+    public Vector2D[] getOriginalVertexes() {
+        return originalVertexes;
+    }
+
+    public void setOriginalVertexes(Vector2D[] originalVertexes) {
+        this.originalVertexes = originalVertexes;
     }
 }
